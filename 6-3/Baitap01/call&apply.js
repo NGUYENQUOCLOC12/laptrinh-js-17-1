@@ -1,6 +1,6 @@
 //call & apply
 var person1 = {name: 'Quoc Loc',age: 21};
-var person2 = {name: 'Shiro',age:21};
+var person2 = {name: 'Polo',age:21};
 var sayHello = function(){
     console.log('Hello, ' + this.name);
 };
