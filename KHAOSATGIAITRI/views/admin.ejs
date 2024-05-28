@@ -13,32 +13,28 @@
             margin-bottom: 20px;
         }
         .chart-container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 10px 0;
-}
-
-canvas {
-    width: 100% !important;
-    height: auto !important;
-    margin: 0 auto !important; /* Canh giữa theo chiều ngang */
-    display: block; /* Loại bỏ khoảng trắng dưới canvas */
-}
-
-table {
-    margin-bottom: 20px;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.action-buttons button {
-    padding: 5px 10px;
-    cursor: pointer;
-}
-.edit, .delete {
+            width: 80%;
+            margin: 0 auto;
+            padding: 10px 0;
+        }
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+            margin: 0 auto !important; /* Canh giữa theo chiều ngang */
+            display: block; /* Loại bỏ khoảng trắng dưới canvas */
+        }
+        table {
+            margin-bottom: 20px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-buttons button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .edit, .delete {
             color: white;
             padding: 10px 20px;
             border: none;
@@ -47,20 +43,15 @@ table {
             font-size: 16px;
             margin: 5px;
         }
-
         .edit {
             background-color: green;
         }
-
         .delete {
             background-color: red;
         }
-        
         .edit:hover, .delete:hover {
             opacity: 0.8;
         }
-
-
     </style>
 </head>
 <body>
@@ -84,7 +75,7 @@ table {
                 <th>Giờ Xem</th>
                 <th>Thể Loại Trò Chơi</th>
                 <th>Sự Kiện Trực Tiếp</th>
-                <th>Nguồn Nội Dung</th> 
+                <th>Nguồn Nội Dung</th>
                 <th>Ghi Chú</th>
                 <th>Hành Động</th>
             </tr>
@@ -148,6 +139,22 @@ table {
     <div class="chart-container">
         <canvas id="tuoiChart"></canvas>
     </div>
+    <div class="chart-container">
+        <canvas id="theLoaiYeuThichChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="gioXemChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="theLoaiTroChoiChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="suKienTrucTiepChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="nguonNoiDungChart"></canvas>
+    </div>
+
     <script>
         function tableToJson(table) {
             const headers = [];
@@ -247,7 +254,7 @@ table {
             );
 
             // Dữ liệu cho biểu đồ yêu thích
-            const yeuThich = data.flatMap(item => item.yêuthích.split(', '));
+            const yeuThich = data.map(item => item.yêuthích);
             const yeuThichCount = countOccurrences(yeuThich);
             createChart(
                 document.getElementById('yeuThichChart').getContext('2d'),
@@ -317,29 +324,26 @@ table {
                 'rgba(153, 102, 255, 0.2)',
                 'rgba(153, 102, 255, 1)'
             );
+
             // Dữ liệu cho biểu đồ Tuổi
-                const tuoi = data.map(item => item.tuổi);
-                const tuoiCount = countOccurrences(tuoi);
+            const tuoi = data.map(item => item.tuổi);
+            const tuoiCount = countOccurrences(tuoi);
+            const tuoiLabels = Object.keys(tuoiCount);
+            const tuoiData = Object.values(tuoiCount);
+            const barColors = generateRandomColors(tuoiLabels.length);
 
-                const tuoiLabels = Object.keys(tuoiCount);
-                const tuoiData = Object.values(tuoiCount);
-
-                // Mảng màu sắc cho từng cột
-                const barColors = generateRandomColors(tuoiLabels.length);
-
-                const tuoiChartCanvas = document.getElementById('tuoiChart').getContext('2d');
-
-        new Chart(tuoiChartCanvas, {
-            type: 'bar',
-            data: {
-                labels: tuoiLabels,
-                datasets: [{
-                    label: 'Tuổi',
-                    data: tuoiData,
-                    backgroundColor: barColors,
-                    borderColor: barColors,
-                    borderWidth: 1
-                            }]
+            const tuoiChartCanvas = document.getElementById('tuoiChart').getContext('2d');
+            new Chart(tuoiChartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: tuoiLabels,
+                    datasets: [{
+                        label: 'Tuổi',
+                        data: tuoiData,
+                        backgroundColor: barColors,
+                        borderColor: barColors,
+                        borderWidth: 1
+                    }]
                 },
                 options: {
                     scales: {
@@ -349,7 +353,8 @@ table {
                     }
                 }
             });
-         // Hàm tạo mảng màu sắc ngẫu nhiên
+
+            // Hàm tạo mảng màu sắc ngẫu nhiên
             function generateRandomColors(numColors) {
                 const colors = [];
                 for (let i = 0; i < numColors; i++) {
@@ -359,7 +364,66 @@ table {
                 return colors;
             }
 
-                    });
+            // Dữ liệu cho biểu đồ Thể Loại Yêu Thích
+            const theLoaiYeuThich = data.map(item => item.thểloạiyêuthích);
+            const theLoaiYeuThichCount = countOccurrences(theLoaiYeuThich);
+            createChart(
+                document.getElementById('theLoaiYeuThichChart').getContext('2d'),
+                Object.keys(theLoaiYeuThichCount),
+                Object.values(theLoaiYeuThichCount),
+                'Thể Loại Yêu Thích',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(255, 206, 86, 1)'
+            );
+
+            // Dữ liệu cho biểu đồ Giờ Xem
+            const gioXem = data.map(item => item.giờxem);
+            const gioXemCount = countOccurrences(gioXem);
+            createChart(
+                document.getElementById('gioXemChart').getContext('2d'),
+                Object.keys(gioXemCount),
+                Object.values(gioXemCount),
+                'Giờ Xem',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(54, 162, 235, 1)'
+            );
+
+            // Dữ liệu cho biểu đồ Thể Loại Trò Chơi
+            const theLoaiTroChoi = data.map(item => item.thểloạitròchơi);
+            const theLoaiTroChoiCount = countOccurrences(theLoaiTroChoi);
+            createChart(
+                document.getElementById('theLoaiTroChoiChart').getContext('2d'),
+                Object.keys(theLoaiTroChoiCount),
+                Object.values(theLoaiTroChoiCount),
+                'Thể Loại Trò Chơi',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(75, 192, 192, 1)'
+            );
+
+            // Dữ liệu cho biểu đồ Sự Kiện Trực Tiếp
+            const suKienTrucTiep = data.map(item => item.sựkiệntrựctiếp);
+            const suKienTrucTiepCount = countOccurrences(suKienTrucTiep);
+            createChart(
+                document.getElementById('suKienTrucTiepChart').getContext('2d'),
+                Object.keys(suKienTrucTiepCount),
+                Object.values(suKienTrucTiepCount),
+                'Sự Kiện Trực Tiếp',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(153, 102, 255, 1)'
+            );
+
+            // Dữ liệu cho biểu đồ Nguồn Nội Dung
+            const nguonNoiDung = data.map(item => item.nguồnnộidung);
+            const nguonNoiDungCount = countOccurrences(nguonNoiDung);
+            createChart(
+                document.getElementById('nguonNoiDungChart').getContext('2d'),
+                Object.keys(nguonNoiDungCount),
+                Object.values(nguonNoiDungCount),
+                'Nguồn Nội Dung',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 159, 64, 1)'
+            );
+        });
     </script>
 </body>
 </html>
